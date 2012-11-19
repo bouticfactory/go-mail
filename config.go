@@ -2,6 +2,7 @@ package email
 
 import (
 	"net/mail"
+	"net/smtp"
 )
 
 var Config = Configuration{
@@ -14,6 +15,7 @@ type Configuration struct {
 	Username string
 	Password string
 	From     mail.Address
+	Auth     *smtp.Auth
 }
 
 func (self *Configuration) Name() string {

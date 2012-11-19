@@ -7,6 +7,7 @@ import (
 	"net/mail"
 	"net/smtp"
 	"time"
+	"strings"
 )
 
 func NewBriefMessage(subject, content string, to ...string) *Message {
@@ -75,6 +76,33 @@ func (self *Message) Validate() error {
 	return nil
 }
 
+func (self *Message) sendWithAuth(addr string, from string, to []string) error {
+	if err := self.Validate(); err != nil {
+		return err
+	}
+	auth := smtp.PlainAuth("", Config.Username, Config.Password, Config.Host)
+	return smtp.SendMail(addr, auth, from, to, []byte(self.String()))
+}
+func (self *Message) sendWithoutAuth(addr string, from string, to []string) error {
+	c, err := smtp.Dial(addr)
+	if err != nil {
+		return err
+	}
+
+	c.Mail(from)
+	c.Rcpt(strings.Join(to, ";"))
+
+	wc, err := c.Data()
+	if err != nil {
+		return err
+	}
+	defer wc.Close()
+
+	buf := bytes.NewBufferString(self.String())
+	_, err = buf.WriteTo(wc)
+	return err
+}
+
 func (self *Message) Send() error {
 	if err := self.Validate(); err != nil {
 		return err
@@ -88,6 +116,9 @@ func (self *Message) Send() error {
 		from = Config.From.Address
 	}
 	addr := fmt.Sprintf("%s:%d", Config.Host, Config.Port)
-	auth := smtp.PlainAuth("", Config.Username, Config.Password, Config.Host)
-	return smtp.SendMail(addr, auth, from, to, []byte(self.String()))
+
+	if Config.Auth != nil {
+		return self.sendWithAuth(addr, from, to)
+	}
+	return self.sendWithoutAuth(addr, from, to)
 }
