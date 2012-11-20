@@ -1,0 +1,18 @@
+Email utilities including RFC5322 messages and Google Mail defaults.
+
+This package is a merge between:
+Erik Unger go-mail package github.com/ungerik/go-mail ed957872758630d680d012c923e445dd0a6b80bb
+Scott Lawrence go-mail package github.com/bytbox/go-mail a6e25cbc346c474f58896ce882effdc4d9c386c1
+
+bytbox's package contains go structures and a parser from raw arrays of bytes
+to these structures. It is like a complete mail receiver.
+ungerik's package contains simpler structures and a smtp configuration. It
+is like a mail writer.
+
+This package merges the two packages an adds:
+- a "reverse-parser", that is a function to convert bytbox Message to a buffer
+- more smtp flexibility to send HTML message
+
+Be warned that it is a work in progress.
+
+See `go doc` for more information
