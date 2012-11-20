@@ -5,7 +5,33 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"io"
+	"bytes"
 )
+
+// implements io.Writer interface to use template.ExecuteTemplate()
+//
+// Example:
+// 	 body := new(mail.SMTPWriter)
+//
+//	 templates.ExecuteTemplate(body, "account_validation", boutique)
+//
+//   message, err := mail.NewHTMLMessage(subject, body.String(), from, to)
+//   mailer.Send(message)
+type SMTPWriter struct {
+	io.Writer
+	content [][]byte
+}
+
+// simply store to [][]bytes
+func (self *SMTPWriter)Write(p []byte) (n int, err error) {
+	self.content = append(self.content, p)
+	return 0, nil
+}
+
+func (self *SMTPWriter)String() string {
+	return string(bytes.Join(self.content, []byte{}))
+}
 
 // structure to connect to a SMTP server
 type SMTPServer struct {
