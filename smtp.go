@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"strings"
 	"io"
-	"bytes"
 )
 
 // implements io.Writer interface to use template.ExecuteTemplate()
@@ -20,17 +19,17 @@ import (
 //   mailer.Send(message)
 type SMTPWriter struct {
 	io.Writer
-	content [][]byte
+	content []string
 }
 
-// simply store to [][]bytes
+// simply store to []string
 func (self *SMTPWriter)Write(p []byte) (n int, err error) {
-	self.content = append(self.content, p)
-	return 0, nil
+	self.content = append(self.content, string(p))
+	return len(p), nil
 }
 
 func (self *SMTPWriter)String() string {
-	return string(bytes.Join(self.content, []byte{}))
+	return strings.Join(self.content, "")
 }
 
 // structure to connect to a SMTP server
