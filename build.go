@@ -3,7 +3,9 @@ package mail
 func newMessage(subject, from string, to []string) (*Message, error) {
 	var err error
 	message := new(Message)
-	message.Subject = subject
+	// Set charset and encoding for email subject.
+	// See RFC 1342.
+	message.Subject = "=?UTF-8?Q?" + subject + "?="
 	message.From, err = parseAddressList([]byte(from))
 	if err != nil {
 		return nil, err
