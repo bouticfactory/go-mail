@@ -10,6 +10,7 @@ func newMessage(subject, from string, to []string) (*Message, error) {
 	if err != nil {
 		return nil, err
 	}
+	message.ReplyTo = append(message.ReplyTo, message.From...)
 	for _, recipient := range to {
 		address, err := ParseAddress([]byte(recipient))
 		if err != nil {
